@@ -1,0 +1,207 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String    @id @default(cuid())
+  email             String    @unique
+  firstName         String
+  lastName          String
+  password          String?
+  googleId          String?   @unique
+  role              String    @default("EMPLOYEE")
+  department        String?
+  isActive          Boolean   @default(true)
+  lastLogin         DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+
+  surveys           Survey[]
+  surveyResponses   SurveyResponse[] @relation("respondents")
+  tasks             Task[]
+  auditLogs         AuditLog[]
+  dashboardPrefs    DashboardPreference?
+
+  @@index([email])
+  @@index([role])
+  @@index([department])
+}
+
+model Survey {
+  id                String    @id @default(cuid())
+  title             String
+  description       String?
+  createdBy         String
+  creator           User      @relation(fields: [createdBy], references: [id], onDelete: NoAction)
+  status            String    @default("DRAFT")
+  startDate         DateTime
+  endDate           DateTime
+  targetDepartment  String?
+  targetRoles       String?
+  isAnonymous       Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  questions         SurveyQuestion[]
+  responses         SurveyResponse[]
+  sentimentAnalysis SentimentAnalysis?
+  engagement        EngagementMetric?
+
+  @@index([status])
+  @@index([startDate])
+  @@index([createdBy])
+}
+
+model SurveyQuestion {
+  id                String    @id @default(cuid())
+  surveyId          String
+  survey            Survey    @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  questionText      String
+  questionType      String
+  options           String?
+  isRequired        Boolean   @default(true)
+  displayOrder      Int
+  createdAt         DateTime  @default(now())
+
+  responses         QuestionResponse[]
+
+  @@index([surveyId])
+}
+
+model SurveyResponse {
+  id                String    @id @default(cuid())
+  surveyId          String
+  survey            Survey    @relation(fields: [surveyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  respondentId      String?
+  respondent        User?     @relation("respondents", fields: [respondentId], references: [id], onDelete: SetNull)
+  anonymousId       String?
+  sentimentScore    Float?
+  submittedAt       DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  questionResponses QuestionResponse[]
+  sentiment         SentimentDetail?
+
+  @@index([surveyId])
+  @@index([respondentId])
+  @@index([submittedAt])
+}
+
+model QuestionResponse {
+  id                String    @id @default(cuid())
+  responseId        String
+  response          SurveyResponse @relation(fields: [responseId], references: [id], onDelete: Cascade)
+  questionId        String
+  question          SurveyQuestion @relation(fields: [questionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  answer            String
+  createdAt         DateTime  @default(now())
+
+  @@index([responseId])
+  @@index([questionId])
+}
+
+model SentimentAnalysis {
+  id                String    @id @default(cuid())
+  surveyId          String    @unique
+  survey            Survey    @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  averageSentiment  Float
+  positiveCount     Int       @default(0)
+  neutralCount      Int       @default(0)
+  negativeCount     Int       @default(0)
+  topicsExtracted   String?
+  keywordFrequency  String?
+  analyzedAt        DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([surveyId])
+}
+
+model SentimentDetail {
+  id                String    @id @default(cuid())
+  responseId        String    @unique
+  response          SurveyResponse @relation(fields: [responseId], references: [id], onDelete: Cascade)
+  rawText           String
+  sentimentScore    Float
+  sentimentLabel    String
+  confidence        Float
+  emotionAnalysis   String?
+  keywordsDetected  String?
+  analyzedAt        DateTime  @default(now())
+
+  @@index([responseId])
+}
+
+model EngagementMetric {
+  id                String    @id @default(cuid())
+  surveyId          String    @unique
+  survey            Survey    @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  totalDistributed  Int       @default(0)
+  totalResponded    Int       @default(0)
+  responseRate      Float     @default(0)
+  averageRating     Float?
+  npsScore          Float?
+  departmentBreakdown String?
+  roleBreakdown     String?
+  lastCalculatedAt  DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([surveyId])
+}
+
+model Task {
+  id                String    @id @default(cuid())
+  title             String
+  description       String?
+  assignedTo        String
+  assignee          User      @relation(fields: [assignedTo], references: [id], onDelete: NoAction)
+  surveyId          String?
+  status            String    @default("PENDING")
+  priority          String    @default("MEDIUM")
+  deadline          DateTime
+  completedAt       DateTime?
+  relatedMetrics    String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([assignedTo])
+  @@index([status])
+  @@index([deadline])
+}
+
+model DashboardPreference {
+  id                String    @id @default(cuid())
+  userId            String    @unique
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  layout            String?
+  selectedMetrics   String?
+  refreshInterval   Int       @default(300)
+  darkMode          Boolean   @default(false)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([userId])
+}
+
+model AuditLog {
+  id                String    @id @default(cuid())
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: NoAction)
+  action            String
+  resourceType      String
+  resourceId        String?
+  description       String?
+  ipAddress         String?
+  userAgent         String?
+  statusCode        Int?
+  createdAt         DateTime  @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+}
