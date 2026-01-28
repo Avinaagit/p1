@@ -5,9 +5,10 @@ import { prisma } from '@/app/_lib/prisma';
 // PATCH - Mark notification as read
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await context.params;
     const token = request.cookies.get('token')?.value;
     if (!token) {
       return NextResponse.json({ message: 'Нэвтэрч орохгүй байна' }, { status: 401 });
@@ -19,7 +20,7 @@ export async function PATCH(
     }
 
     const notification = await prisma.notification.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!notification) {
@@ -31,7 +32,7 @@ export async function PATCH(
     }
 
     const updated = await prisma.notification.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         isRead: true,
         readAt: new Date(),
@@ -55,9 +56,10 @@ export async function PATCH(
 // DELETE - Delete notification
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await context.params;
     const token = request.cookies.get('token')?.value;
     if (!token) {
       return NextResponse.json({ message: 'Нэвтэрч орохгүй байна' }, { status: 401 });
@@ -69,7 +71,7 @@ export async function DELETE(
     }
 
     const notification = await prisma.notification.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!notification) {
@@ -81,7 +83,7 @@ export async function DELETE(
     }
 
     await prisma.notification.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({
