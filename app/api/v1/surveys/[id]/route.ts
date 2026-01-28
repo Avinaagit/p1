@@ -11,9 +11,9 @@ export const dynamic = 'force-dynamic';
  * GET /api/v1/surveys/[id]
  * Get survey details
  */
-export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(req: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = await params;
+    const { id } = await context.params;
     const token = extractToken(req);
     const userContext = await getUserContext(token);
 
@@ -68,9 +68,9 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
  * PUT /api/v1/surveys/[id]
  * Update survey
  */
-export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function PUT(req: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = await params;
+    const { id } = await context.params;
     const token = extractToken(req);
     const userContext = await getUserContext(token);
 
@@ -142,9 +142,9 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
  * DELETE /api/v1/surveys/[id]
  * Delete survey
  */
-export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(req: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = await params;
+    const { id } = await context.params;
     const token = extractToken(req);
     const userContext = await getUserContext(token);
 

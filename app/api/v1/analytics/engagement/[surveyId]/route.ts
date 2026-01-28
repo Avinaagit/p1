@@ -13,10 +13,10 @@ export const dynamic = 'force-dynamic';
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ surveyId: string }> }
+  context: { params: Promise<{ surveyId: string }> }
 ) {
   try {
-    const { surveyId } = await params;
+    const { surveyId } = await context.params;
     const token = extractToken(req);
     const userContext = await getUserContext(token);
 

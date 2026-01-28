@@ -7,10 +7,10 @@ export const runtime = 'nodejs';
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await params;
+    const { id } = await context.params;
     const token = extractToken(request);
     const userContext = await getUserContext(token);
 

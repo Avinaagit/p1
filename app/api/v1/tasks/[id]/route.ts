@@ -10,9 +10,9 @@ export const dynamic = 'force-dynamic';
  * GET /api/v1/tasks/[id]
  * Get task details
  */
-export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(req: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = await params;
+    const { id } = await context.params;
     const token = extractToken(req);
     const userContext = await getUserContext(token);
 
@@ -67,9 +67,9 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
  * PUT /api/v1/tasks/[id]
  * Update task status or details
  */
-export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function PUT(req: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = await params;
+    const { id } = await context.params;
     const token = extractToken(req);
     const userContext = await getUserContext(token);
 
