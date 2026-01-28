@@ -218,12 +218,12 @@ model AuditLog {
 model Notification {
   id                String    @id @default(cuid())
   userId            String
-  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User      @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   type              String
   title             String
   message           String
   surveyId          String?
-  survey            Survey?   @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  survey            Survey?   @relation(fields: [surveyId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   isRead            Boolean   @default(false)
   readAt            DateTime?
   actionUrl         String?
