@@ -32,6 +32,18 @@ const PERMISSIONS: Record<string, string[]> = {
     'access_analytics',
     'access_dashboard',
   ],
+  'HR': [
+    'create_survey',
+    'edit_survey',
+    'view_survey',
+    'view_responses',
+    'export_data',
+    'view_department_data',
+    'create_tasks',
+    'manage_own_tasks',
+    'access_analytics',
+    'access_dashboard',
+  ],
   'EMPLOYEE': [
     'view_survey',
     'submit_response',
@@ -97,8 +109,8 @@ export function canAccessResource(
     return currentUserId === resourceUserId;
   }
 
-  // Consultant can access their department or if assigned
-  if (userRole === 'CONSULTANT') {
+  // HR (legacy consultant) can access their department or if assigned
+  if (userRole === 'CONSULTANT' || userRole === 'HR') {
     if (currentUserId === resourceUserId) return true;
     if (!resourceDepartment) return true; // Organization-wide resource
     return userDepartment === resourceDepartment;

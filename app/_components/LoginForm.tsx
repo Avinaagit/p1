@@ -36,7 +36,7 @@ export function LoginForm({ variant = 'email', onSuccess }: LoginFormProps) {
       }
 
       // Route based on role
-      if (data.data?.user?.role === 'ADMIN' || data.data?.user?.role === 'CONSULTANT') {
+      if (data.data?.user?.role === 'ADMIN' || data.data?.user?.role === 'HR' || data.data?.user?.role === 'CONSULTANT') {
         router.push('/dashboard');
       } else {
         router.push('/dashboard');
@@ -71,35 +71,35 @@ export function LoginForm({ variant = 'email', onSuccess }: LoginFormProps) {
       {error && <div className="p-3 bg-red-100 text-red-700 rounded-lg text-sm">{error}</div>}
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Select User Type</label>
+        <label className="block text-sm font-medium text-white mb-1">Select User Type</label>
         <select
           value={selectedRole}
           onChange={(e) => setSelectedRole(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 border border-white/30 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-200"
           disabled={loading}
         >
-          <option value="admin">Admin Account</option>
-          <option value="consultant">HR Admin / Consultant</option>
+          <option value="admin">Consultant</option>
+          <option value="hr">HR</option>
           <option value="employee">Employee</option>
         </select>
-        <p className="text-xs text-gray-500 mt-1">Select your role to use the appropriate login credentials</p>
+        <p className="text-xs text-white/70 mt-1">Select your role to use the appropriate login credentials</p>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+        <label className="block text-sm font-medium text-white mb-1">Email</label>
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           disabled={loading}
-          placeholder={selectedRole === 'admin' ? 'admin@company.com' : selectedRole === 'consultant' ? 'consultant@company.com' : 'employee@company.com'}
+          placeholder={selectedRole === 'admin' ? 'consultant@company.com' : selectedRole === 'hr' ? 'hr@company.com' : 'employee@company.com'}
           required
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+        <label className="block text-sm font-medium text-white mb-1">Password</label>
         <input
           type="password"
           value={password}

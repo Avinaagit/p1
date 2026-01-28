@@ -55,8 +55,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Only ADMIN and CONSULTANT can create tasks
-    if (!['ADMIN', 'CONSULTANT'].includes(userContext.role)) {
+    // Only ADMIN and HR can create tasks
+    if (!['ADMIN', 'HR', 'CONSULTANT'].includes(userContext.role)) {
       return NextResponse.json(
         { success: false, error: 'Forbidden' },
         { status: 403 }

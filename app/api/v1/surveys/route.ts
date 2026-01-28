@@ -57,8 +57,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Only ADMIN and CONSULTANT can create surveys
-    if (!['ADMIN', 'CONSULTANT'].includes(userContext.role)) {
+    // Only ADMIN and HR can create surveys
+    if (!['ADMIN', 'HR', 'CONSULTANT'].includes(userContext.role)) {
       return NextResponse.json(
         { success: false, error: 'Forbidden' },
         { status: 403 }
@@ -77,6 +77,26 @@ export async function POST(req: NextRequest) {
       questions,
     } = body;
 
+    let resolvedTargetDepartment = targetDepartment;
+
+    if (userContext.role === 'HR' || userContext.role === 'CONSULTANT') {
+      if (!userContext.department) {
+        return NextResponse.json(
+          { success: false, error: 'Хэлтэс тохируулаагүй байна' },
+          { status: 400 }
+        );
+      }
+
+      if (resolvedTargetDepartment && resolvedTargetDepartment !== userContext.department) {
+        return NextResponse.json(
+          { success: false, error: 'Forbidden' },
+          { status: 403 }
+        );
+      }
+
+      resolvedTargetDepartment = userContext.department;
+    }
+
     if (!title || !startDate || !endDate) {
       return NextResponse.json(
         { success: false, error: 'Title, startDate, and endDate are required' },
@@ -92,7 +112,7 @@ export async function POST(req: NextRequest) {
         createdBy: userContext.userId,
         startDate: new Date(startDate),
         endDate: new Date(endDate),
-        targetDepartment,
+        targetDepartment: resolvedTargetDepartment,
         targetRoles: targetRoles ? JSON.stringify(targetRoles) : null,
         isAnonymous,
         questions: {

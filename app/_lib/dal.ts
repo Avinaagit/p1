@@ -46,9 +46,16 @@ export async function authorizeUser(
  * Get surveys visible to the user based on role and department
  */
 export async function getSurveysForUser(userContext: UserContext) {
+  const excludedTitles = ['Q1 2026 Employee Engagement Survey', '1–3 минутын wellbeing pulse'];
+  const excludedIds = ['wellbeing-pulse-2026'];
+
   if (userContext.role === 'ADMIN') {
     // Admin sees all surveys
     return prisma.survey.findMany({
+      where: {
+        id: { notIn: excludedIds },
+        title: { notIn: excludedTitles },
+      },
       include: {
         creator: { select: { id: true, email: true, firstName: true } },
         _count: { select: { responses: true } },
@@ -57,9 +64,17 @@ export async function getSurveysForUser(userContext: UserContext) {
     });
   }
 
-  if (userContext.role === 'CONSULTANT') {
-    // Consultant sees all surveys (can view and manage)
+  if (userContext.role === 'CONSULTANT' || userContext.role === 'HR') {
+    if (!userContext.department) {
+      return [];
+    }
+    // HR/Consultant only sees surveys for their department
     return prisma.survey.findMany({
+      where: {
+        OR: [{ targetDepartment: userContext.department }, { targetDepartment: null }],
+        id: { notIn: excludedIds },
+        title: { notIn: excludedTitles },
+      },
       include: {
         creator: { select: { id: true, email: true, firstName: true } },
         _count: { select: { responses: true } },
@@ -75,6 +90,8 @@ export async function getSurveysForUser(userContext: UserContext) {
         status: 'PUBLISHED',
         startDate: { lte: new Date() },
         endDate: { gte: new Date() },
+        id: { notIn: excludedIds },
+        title: { notIn: excludedTitles },
       },
       include: {
         creator: { select: { id: true, firstName: true } },
@@ -111,8 +128,14 @@ export async function getSurveyResponsesForUser(userContext: UserContext, survey
     });
   }
 
-  if (userContext.role === 'CONSULTANT') {
-    // Consultant sees all responses for their department surveys
+  if (userContext.role === 'CONSULTANT' || userContext.role === 'HR') {
+    if (!userContext.department) {
+      return [];
+    }
+    if (survey.targetDepartment && survey.targetDepartment !== userContext.department) {
+      return [];
+    }
+    // HR/Consultant sees all responses for their department surveys
     return prisma.surveyResponse.findMany({
       where: { surveyId },
       include: {
@@ -195,8 +218,12 @@ export async function getEngagementMetricsForUser(userContext: UserContext) {
     });
   }
 
-  if (userContext.role === 'CONSULTANT') {
+  if (userContext.role === 'CONSULTANT' || userContext.role === 'HR') {
+    if (!userContext.department) {
+      return [];
+    }
     return prisma.engagementMetric.findMany({
+      where: { survey: { targetDepartment: userContext.department } },
       include: { survey: { select: { id: true, title: true, targetDepartment: true } } },
       orderBy: { lastCalculatedAt: 'desc' },
     });

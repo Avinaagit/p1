@@ -40,6 +40,15 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       );
     }
 
+    if (userContext.role === 'HR' || userContext.role === 'CONSULTANT') {
+      if (!userContext.department || (survey.targetDepartment && survey.targetDepartment !== userContext.department)) {
+        return NextResponse.json(
+          { success: false, error: 'Forbidden' },
+          { status: 403 }
+        );
+      }
+    }
+
     await createAuditLog(
       userContext,
       'VIEW_SURVEY',
@@ -87,7 +96,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     if (
       userContext.role !== 'ADMIN' &&
       survey.createdBy !== userContext.userId &&
-      userContext.role !== 'CONSULTANT'
+      userContext.role !== 'CONSULTANT' &&
+      userContext.role !== 'HR'
     ) {
       return NextResponse.json(
         { success: false, error: 'Forbidden' },
@@ -95,7 +105,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       );
     }
 
-    const { title, description, startDate, endDate, status } = await req.json();
+    const { title, description, startDate, endDate, status, targetRoles } = await req.json();
 
     const updated = await prisma.survey.update({
       where: { id },
@@ -105,6 +115,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
         ...(startDate && { startDate: new Date(startDate) }),
         ...(endDate && { endDate: new Date(endDate) }),
         ...(status && { status }),
+        ...(targetRoles && { targetRoles: JSON.stringify(targetRoles) }),
       },
       include: {
         questions: true,

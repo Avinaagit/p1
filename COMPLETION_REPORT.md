@@ -227,8 +227,8 @@ Output Metrics:
    http://localhost:3000
 
 6. Login with Demo Accounts:
-   Admin:      admin@company.com / password123
-   Consultant: consultant@company.com / password123
+  Consultant: consultant@company.com / password123
+  HR: hr@company.com / password123
    Employee:   employee@company.com / password123
 
 ═══════════════════════════════════════════════════════════════════════════════
@@ -528,7 +528,7 @@ Visit:
   http://localhost:3000
 
 Login with:
-  admin@company.com / password123
+  consultant@company.com / password123
 
 ═══════════════════════════════════════════════════════════════════════════════
 

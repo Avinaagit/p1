@@ -64,12 +64,12 @@ The application will be available at: **http://localhost:3000**
 ### Step 6: Login with Demo Accounts
 
 #### Admin Account
-- Email: `admin@company.com`
+- Email: `consultant@company.com`
 - Password: `password123`
 - Access: Full system access, all features
 
 #### Consultant Account
-- Email: `consultant@company.com`
+- Email: `hr@company.com`
 - Password: `password123`
 - Access: Create surveys, view analytics, manage tasks
 
@@ -192,7 +192,7 @@ prisma/
 curl -X POST http://localhost:3000/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{
-    "email": "admin@company.com",
+    "email": "consultant@company.com",
     "password": "password123"
   }'
 ```

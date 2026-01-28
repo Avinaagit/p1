@@ -4,6 +4,7 @@ import { getUserContext, createAuditLog } from '../../../../../_lib/dal';
 import { handleError, successResponse } from '../../../_middleware';
 import prisma from '../../../../../_lib/db';
 import { analyzeSentimentRealtime, extractKeywords, analyzeEmotions } from '../../../../../_lib/nlp';
+import { analyzeSurveyResponses } from '../../../../../_lib/survey-interpretation';
 
 export const dynamic = 'force-dynamic';
 
@@ -40,6 +41,9 @@ export async function POST(
         { status: 400 }
       );
     }
+
+    // Generate interpretation for wellbeing surveys
+    const interpretation = analyzeSurveyResponses(responses, survey.questions);
 
     // Combine all responses into one text for sentiment analysis
     const responseText = responses
@@ -93,7 +97,7 @@ export async function POST(
       );
     }
 
-    return successResponse(response, 201);
+    return successResponse({ ...response, interpretation }, 201);
   } catch (error) {
     return handleError(error);
   }
@@ -119,28 +123,39 @@ export async function GET(
       );
     }
 
+    const survey = await prisma.survey.findUnique({
+      where: { id },
+    });
+
+    if (!survey) {
+      return NextResponse.json(
+        { success: false, error: 'Survey not found' },
+        { status: 404 }
+      );
+    }
+
+    if (userContext.role === 'HR' || userContext.role === 'CONSULTANT') {
+      if (!userContext.department || (survey.targetDepartment && survey.targetDepartment !== userContext.department)) {
+        return NextResponse.json(
+          { success: false, error: 'Forbidden' },
+          { status: 403 }
+        );
+      }
+    }
+
     const responses = await prisma.surveyResponse.findMany({
       where: { surveyId: id },
       include: {
         respondent: { select: { id: true, email: true, firstName: true, department: true } },
         questionResponses: { include: { question: true } },
         sentiment: true,
+        survey: { include: { questions: true } },
       },
       orderBy: { submittedAt: 'desc' },
     });
 
     if (responses.length === 0) {
-      // Check if survey exists at least
-      const survey = await prisma.survey.findUnique({
-        where: { id },
-      });
-
-      if (!survey) {
-        return NextResponse.json(
-          { success: false, error: 'Survey not found' },
-          { status: 404 }
-        );
-      }
+      return successResponse([]);
     }
 
     await createAuditLog(

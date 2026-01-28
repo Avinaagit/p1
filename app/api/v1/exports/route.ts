@@ -22,8 +22,8 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Only ADMIN and CONSULTANT can export
-    if (!['ADMIN', 'CONSULTANT'].includes(userContext.role)) {
+    // Only ADMIN and HR can export
+    if (!['ADMIN', 'HR', 'CONSULTANT'].includes(userContext.role)) {
       return NextResponse.json(
         { success: false, error: 'Forbidden' },
         { status: 403 }
@@ -105,7 +105,7 @@ export async function GET_SENTIMENT(req: NextRequest) {
       );
     }
 
-    if (!['ADMIN', 'CONSULTANT'].includes(userContext.role)) {
+    if (!['ADMIN', 'HR', 'CONSULTANT'].includes(userContext.role)) {
       return NextResponse.json(
         { success: false, error: 'Forbidden' },
         { status: 403 }
@@ -161,7 +161,7 @@ export async function GET_ENGAGEMENT(req: NextRequest) {
       );
     }
 
-    if (!['ADMIN', 'CONSULTANT'].includes(userContext.role)) {
+    if (!['ADMIN', 'HR', 'CONSULTANT'].includes(userContext.role)) {
       return NextResponse.json(
         { success: false, error: 'Forbidden' },
         { status: 403 }

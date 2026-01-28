@@ -362,7 +362,7 @@ npm run db:seed
 npm run dev
 
 # 4. Open http://localhost:3000
-# 5. Login with: admin@company.com / password123
+# 5. Login with: consultant@company.com / password123
 ```
 
 ---

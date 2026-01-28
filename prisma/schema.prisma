@@ -12,6 +12,8 @@ model User {
   email             String    @unique
   firstName         String
   lastName          String
+  companyName       String?
+  locationName      String?
   password          String?
   googleId          String?   @unique
   role              String    @default("EMPLOYEE")
@@ -27,6 +29,7 @@ model User {
   tasks             Task[]
   auditLogs         AuditLog[]
   dashboardPrefs    DashboardPreference?
+  notifications     Notification[]
 
   @@index([email])
   @@index([role])
@@ -45,6 +48,10 @@ model Survey {
   targetDepartment  String?
   targetRoles       String?
   isAnonymous       Boolean   @default(true)
+  isRecurring       Boolean   @default(false)
+  frequency         String?
+  nextScheduledDate DateTime?
+  reminderDays      Int       @default(3)
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
@@ -52,10 +59,12 @@ model Survey {
   responses         SurveyResponse[]
   sentimentAnalysis SentimentAnalysis?
   engagement        EngagementMetric?
+  notifications     Notification[]
 
   @@index([status])
   @@index([startDate])
   @@index([createdBy])
+  @@index([nextScheduledDate])
 }
 
 model SurveyQuestion {
@@ -204,4 +213,24 @@ model AuditLog {
   @@index([userId])
   @@index([action])
   @@index([createdAt])
+}
+
+model Notification {
+  id                String    @id @default(cuid())
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type              String
+  title             String
+  message           String
+  surveyId          String?
+  survey            Survey?   @relation(fields: [surveyId], references: [id], onDelete: Cascade)
+  isRead            Boolean   @default(false)
+  readAt            DateTime?
+  actionUrl         String?
+  createdAt         DateTime  @default(now())
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+  @@index([surveyId])
 }

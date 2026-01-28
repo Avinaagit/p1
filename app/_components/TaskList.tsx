@@ -26,7 +26,15 @@ export function TaskList() {
       const data = await res.json();
 
       if (data.success) {
-        let tasks = data.data || [];
+        const excludedKeywords = [
+          'Q1 2026 Employee Engagement Survey',
+          'Q1 engagement survey',
+          'engagement survey results',
+        ];
+        let tasks = (data.data || []).filter((task: Task) => {
+          const title = task.title?.toLowerCase() || '';
+          return !excludedKeywords.some((keyword) => title.includes(keyword.toLowerCase()));
+        });
         if (filter !== 'all') {
           tasks = tasks.filter((t: Task) =>
             filter === 'pending' ? t.status !== 'COMPLETED' : t.status === 'COMPLETED'

@@ -27,8 +27,8 @@ export async function GET(
       );
     }
 
-    // Only ADMIN and CONSULTANT can view analytics
-    if (!['ADMIN', 'CONSULTANT'].includes(userContext.role)) {
+    // Only ADMIN and HR can view analytics
+    if (!['ADMIN', 'HR', 'CONSULTANT'].includes(userContext.role)) {
       return NextResponse.json(
         { success: false, error: 'Forbidden' },
         { status: 403 }
@@ -44,6 +44,15 @@ export async function GET(
         { success: false, error: 'Survey not found' },
         { status: 404 }
       );
+    }
+
+    if (userContext.role === 'HR' || userContext.role === 'CONSULTANT') {
+      if (!userContext.department || (survey.targetDepartment && survey.targetDepartment !== userContext.department)) {
+        return NextResponse.json(
+          { success: false, error: 'Forbidden' },
+          { status: 403 }
+        );
+      }
     }
 
     // Get all responses for the survey
