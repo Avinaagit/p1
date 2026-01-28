@@ -123,7 +123,6 @@ export async function POST(request: NextRequest) {
             displayOrder: Number(q.displayOrder || 0),
             createdAt: parseDate(q.createdAt) || new Date(),
           })),
-          skipDuplicates: true,
         });
       }
 
@@ -160,7 +159,6 @@ export async function POST(request: NextRequest) {
             answer: String(qr.answer ?? ''),
             createdAt: parseDate(qr.createdAt) || new Date(),
           })),
-          skipDuplicates: true,
         });
       }
 
@@ -176,7 +174,6 @@ export async function POST(request: NextRequest) {
             keywordsDetected: String(s.keywordsDetected ?? ''),
             analyzedAt: parseDate(s.analyzedAt) || new Date(),
           })),
-          skipDuplicates: true,
         });
       }
 
@@ -194,7 +191,6 @@ export async function POST(request: NextRequest) {
             lastCalculatedAt: parseDate(e.lastCalculatedAt) || new Date(),
             updatedAt: parseDate(e.updatedAt) || new Date(),
           })),
-          skipDuplicates: true,
         });
       }
 
@@ -211,7 +207,6 @@ export async function POST(request: NextRequest) {
             analyzedAt: parseDate(s.analyzedAt) || new Date(),
             updatedAt: parseDate(s.updatedAt) || new Date(),
           })),
-          skipDuplicates: true,
         });
       }
     });
