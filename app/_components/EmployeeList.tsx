@@ -46,27 +46,25 @@ export function EmployeeList() {
   const companyNames = ['Employee Pulse LLC', 'Blue Horizon LLC', 'Nomad Tech LLC'];
   const locationNames = ['Улаанбаатар', 'Дархан', 'Эрдэнэт'];
 
-  useEffect(() => {
-    const fetchEmployees = async () => {
-      try {
-        const res = await fetch('/api/v1/employees');
-        const data = await res.json();
+  const fetchEmployees = async (role: string) => {
+    setLoading(true);
+    try {
+      const scopeParam = role === 'CONSULTANT' || role === 'ADMIN' ? '?scope=all' : '';
+      const res = await fetch(`/api/v1/employees${scopeParam}`);
+      const data = await res.json();
 
-        if (!res.ok) {
-          setError(data?.message || 'Ажилтны мэдээлэл авахад алдаа гарлаа');
-          return;
-        }
-
-        setEmployees(data?.data || []);
-      } catch {
-        setError('Network error');
-      } finally {
-        setLoading(false);
+      if (!res.ok) {
+        setError(data?.message || 'Ажилтны мэдээлэл авахад алдаа гарлаа');
+        return;
       }
-    };
 
-    fetchEmployees();
-  }, []);
+      setEmployees(data?.data || []);
+    } catch {
+      setError('Network error');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchUserRole = async () => {
@@ -86,6 +84,12 @@ export function EmployeeList() {
 
     fetchUserRole();
   }, []);
+
+  useEffect(() => {
+    if (userRole) {
+      fetchEmployees(userRole);
+    }
+  }, [userRole]);
 
   useEffect(() => {
     if (userRole === 'HR' && userDepartment && !formValues.department) {

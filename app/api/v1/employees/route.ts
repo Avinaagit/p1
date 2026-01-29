@@ -18,9 +18,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
     }
 
-    const whereClause: { role: string; department?: string | null } = { role: 'EMPLOYEE' };
+    const scope = request.nextUrl.searchParams.get('scope');
+    const includeAll = scope === 'all' && ['ADMIN', 'CONSULTANT'].includes(userContext.role);
+    const whereClause: Record<string, any> = includeAll ? {} : { role: 'EMPLOYEE' };
 
-    if (userContext.role === 'HR') {
+    if (!includeAll && userContext.role === 'HR') {
       if (!userContext.department) {
         return NextResponse.json({ success: true, data: [] }, { status: 200 });
       }
