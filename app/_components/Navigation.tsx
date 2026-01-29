@@ -61,8 +61,11 @@ export function Navigation() {
       : 'Employee Pulse';
   const isConsultantRole = userRole === 'CONSULTANT' || userRole === 'ADMIN';
   const showImportEmployees = userRole === 'ADMIN' && !isConsultantRole;
-  const showEmployeesMenu = userRole !== 'EMPLOYEE' && userRole !== 'SYSTEM_ADMIN';
+  const showEmployeesMenu = userRole !== 'EMPLOYEE';
   const showAccountManagement = userRole === 'SYSTEM_ADMIN';
+  const mainNavClass = userRole === 'SYSTEM_ADMIN'
+    ? 'flex gap-8 items-center'
+    : 'hidden md:flex gap-8 items-center';
 
   const handleLogout = async () => {
     await fetch('/api/v1/auth/logout', { method: 'POST' });
@@ -84,7 +87,7 @@ export function Navigation() {
             </div>
           </div>
 
-          <div className="hidden md:flex gap-8 items-center">
+          <div className={mainNavClass}>
             <a
               href="/dashboard"
               className="nav-link transition font-semibold relative group"
