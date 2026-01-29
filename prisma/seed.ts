@@ -141,65 +141,27 @@ async function main() {
   ];
 
 
-  const predefinedSurveys = [
-    {
-      title: 'Ажлын байрны сэтгэл зүйн үнэлгээ',
-      description: 'Ажилтнуудын стресс, сэтгэл хөдлөлийн төлөв.',
-    },
-    {
-      title: 'Байгууллагын соёлын үнэлгээ',
-      description: 'Байгууллагын соёлын сайн сайхан байдал.',
-    },
-    {
-      title: 'Бие хүний онцлог',
-      description: 'Хувь хүний зан чанар, сэтгэл зүйн шугам.',
-    },
-    {
-      title: 'Зөөлөн ур чадвар',
-      description: 'Харилцаа, багийн ажил, үүрэг хариуцлага.',
-    },
-    {
-      title: 'Сэтгэл зүйн эрүүл мэнд',
-      description: 'Гүнзгий шинжилгээ, зөвлөмж.',
-    },
+  const seededSurveyIds = [
+    'work-psych-2026',
+    'org-culture-2026',
+    'personality-profile-2026',
+    'soft-skills-2026',
+    'mental-health-2026',
+  ];
+  const seededSurveyTitles = [
+    'Ажлын байрны сэтгэл зүйн үнэлгээ',
+    'Байгууллагын соёлын үнэлгээ',
+    'Бие хүний онцлог',
+    'Зөөлөн ур чадвар',
+    'Сэтгэл зүйн эрүүл мэнд',
   ];
 
-  for (const predefined of predefinedSurveys) {
-    const existing = await prisma.survey.findFirst({
-      where: { title: predefined.title },
-    });
-
-    if (!existing) {
-      await prisma.survey.create({
-        data: {
-          title: predefined.title,
-          description: predefined.description,
-          createdBy: consultant.id,
-          status: 'PUBLISHED',
-          startDate: new Date(),
-          endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-          targetDepartment: null,
-          isAnonymous: true,
-          questions: {
-            create: [
-              {
-                questionText: 'Энэ судалгаанд оролцсоноор таны сэтгэгдэл үнэтэй гэж үзэж байна уу?',
-                questionType: 'likert',
-                isRequired: true,
-                displayOrder: 0,
-              },
-              {
-                questionText: 'Сүүлийн сард таны ажлын ачаалал хэр зохистой байсан бэ?',
-                questionType: 'likert',
-                isRequired: true,
-                displayOrder: 1,
-              },
-            ],
-          },
-        },
-      });
-    }
-  }
+  await prisma.survey.deleteMany({
+    where: {
+      title: { in: seededSurveyTitles },
+      id: { notIn: seededSurveyIds },
+    },
+  });
 
   const ratingOptions = JSON.stringify([1, 2, 3, 4, 5]);
 
