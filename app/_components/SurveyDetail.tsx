@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface CategoryScore {
   category: string;
@@ -51,6 +52,7 @@ interface Survey {
 }
 
 export function SurveyDetail({ surveyId }: { surveyId: string }) {
+  const router = useRouter();
   const [survey, setSurvey] = useState<Survey | null>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
@@ -188,6 +190,13 @@ export function SurveyDetail({ surveyId }: { surveyId: string }) {
   return (
     <div className="bg-white rounded-lg shadow p-6">
       <div className="mb-6">
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800"
+        >
+          ← Буцах
+        </button>
         <h1 className="text-2xl font-semibold text-gray-900">{survey.title}</h1>
         {survey.description && (
           <p className="text-gray-700 mt-2">{survey.description}</p>
