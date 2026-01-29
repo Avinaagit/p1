@@ -61,10 +61,10 @@ export function Navigation() {
       : 'Employee Pulse';
   const isConsultantRole = userRole === 'CONSULTANT' || userRole === 'ADMIN';
   const showImportEmployees = userRole === 'ADMIN' && !isConsultantRole;
-  const showEmployeesMenu = userRole !== 'EMPLOYEE';
+  const showEmployeesMenu = userRole !== 'EMPLOYEE' && userRole !== 'SYSTEM_ADMIN';
   const showAccountManagement = userRole === 'SYSTEM_ADMIN';
   const mainNavClass = userRole === 'SYSTEM_ADMIN'
-    ? 'flex gap-8 items-center'
+    ? 'hidden'
     : 'hidden md:flex gap-8 items-center';
 
   const handleLogout = async () => {
