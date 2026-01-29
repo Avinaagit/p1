@@ -29,14 +29,6 @@ export default function Home() {
                 <LoginForm variant="email" />
               </div>
 
-              <div className="mt-8 p-4 bg-white/10 rounded-lg">
-                <h3 className="font-semibold text-white mb-2">Demo Credentials:</h3>
-                <ul className="text-sm text-white space-y-1">
-                  <li>• <span className="font-semibold text-white">Consultant:</span> consultant@company.com / password123</li>
-                  <li>• <span className="font-semibold text-white">HR:</span> hr@company.com / password123</li>
-                  <li>• <span className="font-semibold text-white">Employee:</span> employee@company.com / password123</li>
-                </ul>
-              </div>
             </div>
           </div>
 
