@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
     const includeAll = scope === 'all' && ['ADMIN', 'CONSULTANT'].includes(userContext.role);
     const whereClause: Record<string, any> = includeAll ? {} : { role: 'EMPLOYEE' };
 
-    if (!includeAll && userContext.role === 'HR') {
+    if (!includeAll && userContext.role === 'HR' && scope === 'department') {
       if (!userContext.department) {
         return NextResponse.json({ success: true, data: [] }, { status: 200 });
       }
