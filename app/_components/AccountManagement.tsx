@@ -22,6 +22,7 @@ export function AccountManagement() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const loadUsers = async () => {
     setLoading(true);
@@ -90,6 +91,18 @@ export function AccountManagement() {
     return <div className="p-6">Loading...</div>;
   }
 
+  const normalizedQuery = searchQuery.trim().toLowerCase();
+  const filteredUsers = users.filter((user) => {
+    if (!normalizedQuery) return true;
+    const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
+    return (
+      fullName.includes(normalizedQuery) ||
+      user.email.toLowerCase().includes(normalizedQuery) ||
+      user.role.toLowerCase().includes(normalizedQuery) ||
+      (user.department || '').toLowerCase().includes(normalizedQuery)
+    );
+  });
+
   return (
     <div className="bg-white rounded-lg shadow p-6 space-y-6">
       {error ? <div className="text-red-600">{error}</div> : null}
@@ -101,6 +114,16 @@ export function AccountManagement() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
+        <div className="md:col-span-3">
+          <label className="block text-sm font-medium text-gray-700 mb-1">Хайх</label>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+            placeholder="Нэр, и-мэйл, role, хэлтэс"
+            className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
+          />
+        </div>
         <div className="md:col-span-1">
           <label className="block text-sm font-medium text-gray-700 mb-1">Хэрэглэгч</label>
           <select
@@ -109,7 +132,7 @@ export function AccountManagement() {
             className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
           >
             <option value="">Сонгох...</option>
-            {users.map((user) => (
+            {filteredUsers.map((user) => (
               <option key={user.id} value={user.id}>
                 {user.firstName} {user.lastName} — {user.email}
               </option>
@@ -160,7 +183,7 @@ export function AccountManagement() {
             </tr>
           </thead>
           <tbody>
-            {users.map((user) => (
+            {filteredUsers.map((user) => (
               <tr key={user.id} className="border-b last:border-0">
                 <td className="py-2 px-3">{user.firstName} {user.lastName}</td>
                 <td className="py-2 px-3">{user.email}</td>
