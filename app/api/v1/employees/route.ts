@@ -76,6 +76,7 @@ export async function POST(request: NextRequest) {
     const department = String(body?.department || '').trim();
     const companyName = String(body?.companyName || '').trim();
     const locationName = String(body?.locationName || '').trim();
+    const requestedRole = String(body?.role || 'EMPLOYEE').trim().toUpperCase();
     const enforcedDepartment =
       userContext.role === 'HR' ? String(userContext.department || '').trim() : department;
 
@@ -108,7 +109,7 @@ export async function POST(request: NextRequest) {
         companyName: companyName || null,
         locationName: locationName || null,
         department: enforcedDepartment || null,
-        role: 'EMPLOYEE',
+        role: userContext.role === 'ADMIN' ? requestedRole : 'EMPLOYEE',
       },
       select: {
         id: true,

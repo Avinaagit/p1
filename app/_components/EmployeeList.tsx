@@ -41,6 +41,7 @@ export function EmployeeList() {
     department: '',
     companyName: '',
     locationName: '',
+    role: 'EMPLOYEE',
   });
   const [searchQuery, setSearchQuery] = useState('');
   const companyNames = ['Employee Pulse LLC', 'Blue Horizon LLC', 'Nomad Tech LLC'];
@@ -49,7 +50,7 @@ export function EmployeeList() {
   const fetchEmployees = async (role: string) => {
     setLoading(true);
     try {
-      const scopeParam = role === 'CONSULTANT' || role === 'ADMIN' ? '?scope=all' : '';
+      const scopeParam = role === 'CONSULTANT' || role === 'ADMIN' || role === 'HR' ? '?scope=all' : '';
       const res = await fetch(`/api/v1/employees${scopeParam}`);
       const data = await res.json();
 
@@ -94,6 +95,9 @@ export function EmployeeList() {
   useEffect(() => {
     if (userRole === 'HR' && userDepartment && !formValues.department) {
       setFormValues((prev) => ({ ...prev, department: userDepartment }));
+    }
+    if (userRole === 'HR' && formValues.role !== 'EMPLOYEE') {
+      setFormValues((prev) => ({ ...prev, role: 'EMPLOYEE' }));
     }
   }, [userRole, userDepartment, formValues.department]);
 
@@ -168,6 +172,7 @@ export function EmployeeList() {
           department: formValues.department.trim(),
           companyName: formValues.companyName.trim(),
           locationName: formValues.locationName.trim(),
+          role: formValues.role,
         }),
       });
 
@@ -193,6 +198,7 @@ export function EmployeeList() {
         department: '',
         companyName: '',
         locationName: '',
+        role: 'EMPLOYEE',
       });
       setFormSuccess('Шинэ ажилтан амжилттай бүртгэгдлээ');
     } catch {
@@ -283,6 +289,7 @@ export function EmployeeList() {
               <th className="py-2 px-3 font-semibold">Хэлтэс</th>
               <th className="py-2 px-3 font-semibold">Нэр</th>
               <th className="py-2 px-3 font-semibold">И-мэйл</th>
+              <th className="py-2 px-3 font-semibold">Role</th>
               <th className="py-2 px-3 font-semibold">Идэвх</th>
               <th className="py-2 px-3 font-semibold">Бүртгэсэн огноо</th>
               {userRole !== 'CONSULTANT' && userRole !== 'ADMIN' ? (
@@ -351,6 +358,11 @@ export function EmployeeList() {
                   />
                 </td>
                 <td className="py-2 px-3">
+                  <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-700">
+                    EMPLOYEE
+                  </span>
+                </td>
+                <td className="py-2 px-3">
                   <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-700">
                     Идэвхтэй
                   </span>
@@ -372,7 +384,7 @@ export function EmployeeList() {
               <tr>
                 <td
                   className="py-4 px-3 text-gray-500"
-                  colSpan={userRole === 'CONSULTANT' || userRole === 'ADMIN' ? 7 : 8}
+                  colSpan={userRole === 'CONSULTANT' || userRole === 'ADMIN' ? 8 : 9}
                 >
                   Ажилтан олдсонгүй
                 </td>
@@ -451,6 +463,11 @@ export function EmployeeList() {
                     ) : (
                       employee.email
                     )}
+                  </td>
+                  <td className="py-2 px-3">
+                    <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-700">
+                      {employee.role}
+                    </span>
                   </td>
                   <td className="py-2 px-3">
                     {editingId === employee.id ? (
