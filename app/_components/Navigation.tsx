@@ -87,68 +87,8 @@ export function Navigation() {
             </div>
           </div>
 
-          <div className={mainNavClass}>
-            <a
-              href="/dashboard"
-              className="nav-link transition font-semibold relative group"
-            >
-              <span className="flex items-center gap-2">
-                Dashboard
-              </span>
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300"></span>
-            </a>
-            <a
-              href="/surveys"
-              className="nav-link transition font-semibold relative group"
-            >
-              <span className="flex items-center gap-2">
-                Surveys
-              </span>
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300"></span>
-            </a>
-            {!isConsultantRole && (
-              <a
-                href="/tasks"
-                className="nav-link transition font-semibold relative group"
-              >
-                <span className="flex items-center gap-2">
-                  Tasks
-                </span>
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300"></span>
-              </a>
-            )}
-            {showImportEmployees && (
-              <a
-                href="/employees/import"
-                className="nav-link transition relative group text-white"
-              >
-                <span className="flex items-center gap-2 text-sm font-medium">
-                  Import Employees
-                </span>
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300"></span>
-              </a>
-            )}
-            <a
-              href="/analytics"
-              className="nav-link transition font-semibold relative group"
-            >
-              <span className="flex items-center gap-2">
-                Analytics
-              </span>
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300"></span>
-            </a>
-            {showEmployeesMenu && (
-              <a
-                href="/employees"
-                className="nav-link transition font-semibold relative group"
-              >
-                <span className="flex items-center gap-2">
-                  Employees
-                </span>
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300"></span>
-              </a>
-            )}
-            {showAccountManagement && (
+          {showAccountManagement ? (
+            <div className="flex gap-8 items-center">
               <a
                 href="/account-management"
                 className="nav-link transition font-semibold relative group"
@@ -158,8 +98,71 @@ export function Navigation() {
                 </span>
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300"></span>
               </a>
-            )}
-          </div>
+            </div>
+          ) : (
+            <div className={mainNavClass}>
+              <a
+                href="/dashboard"
+                className="nav-link transition font-semibold relative group"
+              >
+                <span className="flex items-center gap-2">
+                  Dashboard
+                </span>
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300"></span>
+              </a>
+              <a
+                href="/surveys"
+                className="nav-link transition font-semibold relative group"
+              >
+                <span className="flex items-center gap-2">
+                  Surveys
+                </span>
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300"></span>
+              </a>
+              {!isConsultantRole && (
+                <a
+                  href="/tasks"
+                  className="nav-link transition font-semibold relative group"
+                >
+                  <span className="flex items-center gap-2">
+                    Tasks
+                  </span>
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300"></span>
+                </a>
+              )}
+              {showImportEmployees && (
+                <a
+                  href="/employees/import"
+                  className="nav-link transition relative group text-white"
+                >
+                  <span className="flex items-center gap-2 text-sm font-medium">
+                    Import Employees
+                  </span>
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300"></span>
+                </a>
+              )}
+              <a
+                href="/analytics"
+                className="nav-link transition font-semibold relative group"
+              >
+                <span className="flex items-center gap-2">
+                  Analytics
+                </span>
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300"></span>
+              </a>
+              {showEmployeesMenu && (
+                <a
+                  href="/employees"
+                  className="nav-link transition font-semibold relative group"
+                >
+                  <span className="flex items-center gap-2">
+                    Employees
+                  </span>
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300"></span>
+                </a>
+              )}
+            </div>
+          )}
 
           <div className="flex items-center gap-3">
             <NotificationBell />
