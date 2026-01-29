@@ -64,6 +64,20 @@ async function main() {
 
   console.log('✓ Created demo users');
 
+  await prisma.user.upsert({
+    where: { email: 'system.admin@company.com' },
+    update: {},
+    create: {
+      email: 'system.admin@company.com',
+      firstName: 'System',
+      lastName: 'Admin',
+      password: 'System#Admin1',
+      role: 'SYSTEM_ADMIN',
+      department: 'IT',
+      isActive: true,
+    },
+  });
+
   // Removed legacy demo surveys (Q1 2026 Employee Engagement Survey & wellbeing pulse)
   const mentalHealthQuestions = [
     'Сүүлийн үед би байнга сэтгэл зүйн дарамт мэдэрч байна',

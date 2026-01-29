@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { signToken, createAuthCookie, verifyToken, extractToken } from '../../../../_lib/auth';
 import { handleError, successResponse } from '../../_middleware';
 import prisma from '../../../../_lib/db';
+import bcrypt from 'bcryptjs';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,13 +33,23 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // In production, use proper password hashing (bcrypt, argon2, etc.)
-    // This is simplified for demo purposes
-    if (user.password !== password) {
+    const passwordMatches = user.password.startsWith('$2')
+      ? await bcrypt.compare(password, user.password)
+      : user.password === password;
+
+    if (!passwordMatches) {
       return NextResponse.json(
         { success: false, error: 'Invalid email or password' },
         { status: 401 }
       );
+    }
+
+    if (!user.password.startsWith('$2')) {
+      const hashed = await bcrypt.hash(password, 10);
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { password: hashed },
+      });
     }
 
     if (!user.isActive) {

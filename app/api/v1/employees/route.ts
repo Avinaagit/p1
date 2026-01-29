@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
 
-    if (!['ADMIN', 'HR', 'CONSULTANT'].includes(userContext.role)) {
+    if (!['ADMIN', 'HR', 'CONSULTANT', 'SYSTEM_ADMIN'].includes(userContext.role)) {
       return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
     }
 
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
 
-    if (!['ADMIN', 'HR'].includes(userContext.role)) {
+    if (!['ADMIN', 'HR', 'SYSTEM_ADMIN'].includes(userContext.role)) {
       return NextResponse.json({ success: false, message: 'Forbidden' }, { status: 403 });
     }
 
@@ -109,7 +109,7 @@ export async function POST(request: NextRequest) {
         companyName: companyName || null,
         locationName: locationName || null,
         department: enforcedDepartment || null,
-        role: userContext.role === 'ADMIN' ? requestedRole : 'EMPLOYEE',
+        role: ['ADMIN', 'SYSTEM_ADMIN'].includes(userContext.role) ? requestedRole : 'EMPLOYEE',
       },
       select: {
         id: true,

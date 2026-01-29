@@ -4,6 +4,23 @@ import { JWTPayload } from './auth';
  * Role-based permission definitions
  */
 const PERMISSIONS: Record<string, string[]> = {
+  'SYSTEM_ADMIN': [
+    'create_survey',
+    'edit_survey',
+    'delete_survey',
+    'view_all_surveys',
+    'view_all_responses',
+    'manage_users',
+    'manage_roles',
+    'export_data',
+    'view_audit_logs',
+    'create_tasks',
+    'manage_tasks',
+    'access_analytics',
+    'access_dashboard',
+    'configure_system',
+    'manage_passwords',
+  ],
   'ADMIN': [
     'create_survey',
     'edit_survey',
@@ -101,6 +118,7 @@ export function canAccessResource(
   resourceUserId?: string,
   currentUserId?: string
 ): boolean {
+  if (userRole === 'SYSTEM_ADMIN') return true;
   // Admin can access everything
   if (userRole === 'ADMIN') return true;
 

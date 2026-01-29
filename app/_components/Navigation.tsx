@@ -35,7 +35,9 @@ export function Navigation() {
     if (typeof document === 'undefined' || !initialTitle.current) return;
 
     const brandLabel =
-      userRole === 'HR'
+      userRole === 'SYSTEM_ADMIN'
+        ? 'System Admin'
+        : userRole === 'HR'
         ? 'HR'
         : userRole === 'CONSULTANT' || userRole === 'ADMIN'
         ? 'Consultant'
@@ -50,14 +52,17 @@ export function Navigation() {
   }, [userRole]);
 
   const brandLabel =
-    userRole === 'HR'
+    userRole === 'SYSTEM_ADMIN'
+      ? 'System Admin'
+      : userRole === 'HR'
       ? 'HR'
       : userRole === 'CONSULTANT' || userRole === 'ADMIN'
       ? 'Consultant'
       : 'Employee Pulse';
   const isConsultantRole = userRole === 'CONSULTANT' || userRole === 'ADMIN';
   const showImportEmployees = userRole === 'ADMIN' && !isConsultantRole;
-  const showEmployeesMenu = userRole !== 'EMPLOYEE';
+  const showEmployeesMenu = userRole !== 'EMPLOYEE' && userRole !== 'SYSTEM_ADMIN';
+  const showAccountManagement = userRole === 'SYSTEM_ADMIN';
 
   const handleLogout = async () => {
     await fetch('/api/v1/auth/logout', { method: 'POST' });
@@ -136,6 +141,17 @@ export function Navigation() {
               >
                 <span className="flex items-center gap-2">
                   Employees
+                </span>
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300"></span>
+              </a>
+            )}
+            {showAccountManagement && (
+              <a
+                href="/account-management"
+                className="nav-link transition font-semibold relative group"
+              >
+                <span className="flex items-center gap-2">
+                  Account Management
                 </span>
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300"></span>
               </a>

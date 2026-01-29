@@ -79,6 +79,7 @@ export function LoginForm({ variant = 'email', onSuccess }: LoginFormProps) {
           disabled={loading}
         >
           <option value="admin">Consultant</option>
+          <option value="system_admin">System Admin</option>
           <option value="hr">HR</option>
           <option value="employee">Employee</option>
         </select>
