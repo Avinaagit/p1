@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 
 interface Survey {
@@ -39,7 +39,8 @@ export function SurveyList() {
   const [inviteSending, setInviteSending] = useState(false);
   const [inviteError, setInviteError] = useState('');
   const [inviteSuccess, setInviteSuccess] = useState('');
-  const [inviteCounts, setInviteCounts] = useState<Record<string, number>>({});
+  const [inviteCounts, setInviteCounts] = useState<Record<string, { count: number; lastSentAt?: string }>>({});
+  const [responseStats, setResponseStats] = useState<Record<string, { count: number; lastSubmittedAt?: string }>>({});
   const [visibilityUpdating, setVisibilityUpdating] = useState<string>('');
   const router = useRouter();
 
@@ -171,6 +172,7 @@ export function SurveyList() {
   };
 
   const isConsultantRole = userRole === 'CONSULTANT' || userRole === 'ADMIN';
+  const canFetchInviteCounts = ['ADMIN', 'CONSULTANT', 'HR'].includes(userRole || '');
   const isHRRole = userRole === 'HR';
   const parseTargetRoles = (targetRoles?: string | null) => {
     if (!targetRoles) return null;
@@ -185,11 +187,15 @@ export function SurveyList() {
     const roles = parseTargetRoles(survey.targetRoles);
     return !roles || roles.includes('HR');
   };
-  const visibleSurveys = isConsultantRole
-    ? surveys.filter((survey) => survey.creator?.id === userId)
-    : isHRRole
-    ? surveys.filter(isVisibleToHR)
-    : surveys;
+  const visibleSurveys = useMemo(() => {
+    if (isConsultantRole) {
+      return surveys.filter((survey) => survey.creator?.id === userId);
+    }
+    if (isHRRole) {
+      return surveys.filter(isVisibleToHR);
+    }
+    return surveys;
+  }, [isConsultantRole, isHRRole, surveys, userId]);
   const activeSurveys = visibleSurveys.filter(isActiveSurvey);
   const completedSurveys = visibleSurveys.filter((survey) => !isActiveSurvey(survey));
   const showSplitSections = isHRRole;
@@ -205,10 +211,13 @@ export function SurveyList() {
     locationNames[hashString(email) % locationNames.length];
 
   useEffect(() => {
-    if (isConsultantRole && userId) {
+    if (canFetchInviteCounts && userId) {
       fetchInviteCounts(visibleSurveys.map((survey) => survey.id));
     }
-  }, [isConsultantRole, userId, surveys]);
+    if (userId) {
+      fetchResponseStats(visibleSurveys.map((survey) => survey.id));
+    }
+  }, [canFetchInviteCounts, userId, visibleSurveys]);
 
   const fetchInviteCounts = async (surveyIds: string[]) => {
     if (surveyIds.length === 0) {
@@ -224,6 +233,23 @@ export function SurveyList() {
       }
     } catch (err) {
       console.error('Failed to load invite counts');
+    }
+  };
+
+  const fetchResponseStats = async (surveyIds: string[]) => {
+    if (surveyIds.length === 0) {
+      setResponseStats({});
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/v1/surveys/response-stats?ids=${surveyIds.join(',')}`);
+      const data = await res.json();
+      if (res.ok && data?.data) {
+        setResponseStats(data.data || {});
+      }
+    } catch {
+      console.error('Failed to load response stats');
     }
   };
 
@@ -405,7 +431,7 @@ export function SurveyList() {
       showInvite?: boolean;
       showTake?: boolean;
       onInvite?: () => void;
-      inviteCount?: number;
+      inviteCount?: { count: number; lastSentAt?: string };
       showVisibilityToggle?: boolean;
     }
   ) => (
@@ -427,9 +453,20 @@ export function SurveyList() {
           <span className="ml-2">{survey._count.responses} responses</span>
         </div>
         <div className="flex gap-4 items-center">
-          {typeof options?.inviteCount === 'number' && (
+          {options?.inviteCount && options.inviteCount.count > 0 && (
             <span className="text-sm text-blue-600 font-bold">
-              Урилга илгээгдсэн: {options.inviteCount}
+              Урилга: {options.inviteCount.count}
+              {options.inviteCount.lastSentAt
+                ? ` • ${new Date(options.inviteCount.lastSentAt).toLocaleDateString('mn-MN')}`
+                : ''}
+            </span>
+          )}
+          {responseStats[survey.id] && responseStats[survey.id].count > 0 && (
+            <span className="text-sm text-green-700 font-semibold">
+              Бөглөсөн: {responseStats[survey.id].count}
+              {responseStats[survey.id].lastSubmittedAt
+                ? ` • ${new Date(responseStats[survey.id].lastSubmittedAt).toLocaleDateString('mn-MN')}`
+                : ''}
             </span>
           )}
           {options?.showVisibilityToggle && (
@@ -477,7 +514,7 @@ export function SurveyList() {
           <div className="grid gap-4">
             {visibleSurveys.map((survey) =>
               renderSurveyCard(survey, {
-                inviteCount: inviteCounts[survey.id] || 0,
+                inviteCount: inviteCounts[survey.id],
                 showVisibilityToggle: true,
               })
             )}
@@ -513,6 +550,7 @@ export function SurveyList() {
                 renderSurveyCard(survey, {
                   showInvite: true,
                   onInvite: () => openInviteModal(survey),
+                  inviteCount: canFetchInviteCounts ? inviteCounts[survey.id] : undefined,
                 })
               )}
             </div>
@@ -527,7 +565,11 @@ export function SurveyList() {
             </div>
           ) : (
             <div className="grid gap-4">
-              {completedSurveys.map((survey) => renderSurveyCard(survey))}
+              {completedSurveys.map((survey) =>
+                renderSurveyCard(survey, {
+                  inviteCount: canFetchInviteCounts ? inviteCounts[survey.id] : undefined,
+                })
+              )}
             </div>
           )}
         </div>

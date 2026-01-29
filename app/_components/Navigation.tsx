@@ -183,8 +183,28 @@ export function Navigation() {
                     className="fixed inset-0 z-10"
                     onClick={() => setShowMenu(false)}
                   />
-                  <div className="absolute right-0 mt-3 w-56 bg-[#0f1bb8] border border-white/10 rounded-xl shadow-2xl z-20 overflow-hidden">
-                    <div className="p-2">
+                  <div className="absolute right-0 mt-3 w-64 bg-[#0f1bb8] border border-white/10 rounded-xl shadow-2xl z-20 overflow-hidden">
+                    <div className="p-2 flex flex-col gap-1">
+                      {/* Main navigation links for mobile */}
+                      {!showAccountManagement && (
+                        <>
+                          <a href="/dashboard" className="block px-4 py-2.5 text-white/90 hover:bg-white/10 hover:text-white rounded-lg transition-all duration-200 font-medium">Dashboard</a>
+                          <a href="/surveys" className="block px-4 py-2.5 text-white/90 hover:bg-white/10 hover:text-white rounded-lg transition-all duration-200 font-medium">Surveys</a>
+                          {!isConsultantRole && (
+                            <a href="/tasks" className="block px-4 py-2.5 text-white/90 hover:bg-white/10 hover:text-white rounded-lg transition-all duration-200 font-medium">Tasks</a>
+                          )}
+                          {showImportEmployees && (
+                            <a href="/employees/import" className="block px-4 py-2.5 text-white/90 hover:bg-white/10 hover:text-white rounded-lg transition-all duration-200 font-medium">Import Employees</a>
+                          )}
+                          <a href="/analytics" className="block px-4 py-2.5 text-white/90 hover:bg-white/10 hover:text-white rounded-lg transition-all duration-200 font-medium">Analytics</a>
+                          {showEmployeesMenu && (
+                            <a href="/employees" className="block px-4 py-2.5 text-white/90 hover:bg-white/10 hover:text-white rounded-lg transition-all duration-200 font-medium">Employees</a>
+                          )}
+                        </>
+                      )}
+                      {showAccountManagement && (
+                        <a href="/account-management" className="block px-4 py-2.5 text-white/90 hover:bg-white/10 hover:text-white rounded-lg transition-all duration-200 font-medium">Account Management</a>
+                      )}
                       <a
                         href="/notifications"
                         className="block px-4 py-2.5 text-white/90 hover:bg-white/10 hover:text-white rounded-lg transition-all duration-200 font-medium"

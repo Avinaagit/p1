@@ -34,10 +34,11 @@ export async function GET(request: NextRequest) {
       select: {
         resourceId: true,
         description: true,
+        createdAt: true,
       },
     });
 
-    const counts: Record<string, number> = {};
+    const counts: Record<string, { count: number; lastSentAt?: string }> = {};
 
     for (const log of logs) {
       const resourceId = log.resourceId || '';
@@ -56,7 +57,13 @@ export async function GET(request: NextRequest) {
         value = Number(numberMatch[1]);
       }
 
-      counts[resourceId] = (counts[resourceId] || 0) + (Number.isNaN(value) ? 0 : value);
+      const prev = counts[resourceId] || { count: 0 };
+      const nextCount = prev.count + (Number.isNaN(value) ? 0 : value);
+      const lastSentAt =
+        !prev.lastSentAt || log.createdAt > new Date(prev.lastSentAt)
+          ? log.createdAt.toISOString()
+          : prev.lastSentAt;
+      counts[resourceId] = { count: nextCount, lastSentAt };
     }
 
     return NextResponse.json({ success: true, data: counts }, { status: 200 });

@@ -3,7 +3,15 @@ import { LoginForm } from './_components/LoginForm';
 export default function Home() {
   return (
     <div className="min-h-screen bg-[var(--background)]">
-      <div className="mx-auto flex min-h-screen max-w-6xl items-center justify-center px-6 py-12">
+      <div className="pt-40 pb-4">
+        <h1
+          className="text-4xl font-bold text-center text-[#4A0ED5] drop-shadow mb-4"
+          style={{ fontFamily: '"Pacifico", "Caveat", "Dancing Script", cursive' }}
+        >
+          Welcome to TEAMVOICE
+        </h1>
+      </div>
+      <div className="mx-auto flex min-h-screen max-w-6xl items-start justify-center px-6 py-4">
         <div className="flex w-full items-stretch justify-between gap-10 bg-[var(--background)]">
           <div className="w-full max-w-md self-stretch flex-1">
             <div className="bg-[#4A0ED5] text-white rounded-lg shadow-xl p-8 h-[620px]">
