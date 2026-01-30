@@ -462,7 +462,7 @@ export function SurveyList() {
             </span>
           )}
           {responseStats[survey.id] && responseStats[survey.id].count > 0 && (
-            <span className="text-sm text-green-700 font-semibold">
+            <span className="text-sm font-semibold text-blue-700">
               Бөглөсөн: {responseStats[survey.id].count}
               {responseStats[survey.id].lastSubmittedAt
                 ? ` • ${new Date(responseStats[survey.id].lastSubmittedAt).toLocaleDateString('mn-MN')}`
@@ -493,6 +493,7 @@ export function SurveyList() {
             <button
               onClick={() => router.push(`/surveys/${survey.id}`)}
               className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+              style={{ color: '#fff' }}
             >
               Судалгаа бөглөх
             </button>

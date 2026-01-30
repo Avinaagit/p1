@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('Seeding database with demo data...');
+  // console.log('Seeding database with demo data...');
 
   // Create demo users
   const admin = await prisma.user.upsert({
@@ -62,7 +62,7 @@ async function main() {
     },
   });
 
-  console.log('✓ Created demo users');
+  // console.log('✓ Created demo users');
 
   await prisma.user.upsert({
     where: { email: 'system.admin@company.com' },
@@ -390,7 +390,7 @@ async function main() {
     ],
   });
 
-  console.log('✅ Database seeding completed successfully!');
+  // console.log('✅ Database seeding completed successfully!');
 }
 
 function extractKeywords(text: string): string[] {

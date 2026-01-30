@@ -166,8 +166,8 @@ export function Navigation() {
 
           <div className="flex items-center gap-3">
             <NotificationBell />
-            
-            <div className="relative">
+            {/* Only show 3-dot menu on mobile */}
+            <div className="relative md:hidden">
               <button
                 onClick={() => setShowMenu(!showMenu)}
                 className="p-2.5 text-white hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200"

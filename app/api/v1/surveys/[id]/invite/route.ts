@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Build query to get recipients
-    let whereClause: any = {
+    let whereClause: Record<string, any> = {
       isActive: true,
       email: { not: null },
       role: 'EMPLOYEE',

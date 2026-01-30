@@ -32,7 +32,7 @@ export async function sendEmail({ to, subject, html }: EmailOptions) {
       html,
     });
 
-    console.log('Email sent:', info.messageId);
+    // console.log('Email sent:', info.messageId);
     return { success: true, messageId: info.messageId };
   } catch (error: any) {
     console.error('Email sending error:', error);

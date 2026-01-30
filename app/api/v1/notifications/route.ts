@@ -18,13 +18,10 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const unreadOnly = searchParams.get('unreadOnly') === 'true';
 
-    const whereClause: any = {
+    const whereClause = {
       userId: payload.userId,
+      ...(unreadOnly ? { isRead: false } : {}),
     };
-
-    if (unreadOnly) {
-      whereClause.isRead = false;
-    }
 
     const notifications = await prisma.notification.findMany({
       where: whereClause,
